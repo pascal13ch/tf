@@ -17,7 +17,6 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "ubuntu" {
-  count         = var.instances_count
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
   //memory        = var.instance_mem * 1024
