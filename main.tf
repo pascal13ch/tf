@@ -17,14 +17,12 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "ubuntu" {
+  cpu_core_count = 1
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
-  //memory        = var.instance_mem * 1024
-  //num_cpus      = var.instance_cpu
 
   tags = {
     Name                 = var.instance_hostname_prefix
     "Linux Distribution" = "Ubuntu"
   }
-  
 }
