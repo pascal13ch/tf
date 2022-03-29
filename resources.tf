@@ -23,7 +23,7 @@ resource "aws_instance" "web" {
 
   connection {
     type     = "ssh"
-    user     = "root"
+    user     = "ubuntu"
     password = var.root_password
     host     = self.public_ip
   }
