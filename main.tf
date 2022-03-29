@@ -27,4 +27,6 @@ resource "aws_instance" "ubuntu" {
     Name                 = var.instance_hostname_prefix
     "Linux Distribution" = "Ubuntu"
   }
+  
+  owners = ["099720109477"] # Canonical
 }
