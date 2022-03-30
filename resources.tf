@@ -28,7 +28,7 @@ resource "aws_instance" "web" {
     type        = "ssh"
     host        = self.public_ip
     user        = "ubuntu"
-    private_key = file("${path.module}/aws_key")
+    private_key = file("${path.module}/aws_key/aws_key")
     timeout     = "4m"
   }
 
