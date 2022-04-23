@@ -47,17 +47,3 @@ resource "aws_security_group" "web-ssh-http" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-resource "aws_ebs_volume" "web-storage" {
-  availability_zone = var.region
-  size              = 1
-  tags              = {
-    Name = "webstorage"
-  }
-}
-
-resource "aws_volume_attachment" "web-storage-attach"{
-  device_name   = "/dev/sdd"
-  volume_id     = "${aws_ebs_volume.web-storage.id}"
-  instance_id   = "${aws_instance.web.id}"
-}
