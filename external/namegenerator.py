@@ -1,13 +1,12 @@
-import time
-from datetime import datetime
-import json 
+import json
+import uuid
 
 FORMAT='%Y-%m'
-fixed_name = "WebServer"
-date=time.strftime("%d-%m-%Y")
+fixed_name = "WEB"
+uuid = uuid.uuid1()
 
 result = {
-  "name": f"{fixed_name}-{str(date)}",
+  "name": f"{fixed_name}-{uuid}",
 }
 
 print(json.dumps(result))
