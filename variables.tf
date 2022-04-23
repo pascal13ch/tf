@@ -9,6 +9,3 @@ variable "instance_type" {
 variable "instance_name" {
     default = "Webserver"
 }
-variable "root_password" {
-    default = "Welcome$22"
-}
