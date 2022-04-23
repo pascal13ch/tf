@@ -18,60 +18,48 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "web" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
+  security_groups   = ["${aws_security_group.web_security_group.name}"]
+  user_data = <<-EOF
+                #! /bin/bash
+                sudo yum install httpd -y
+                sudo systemctl start httpd
+                sudo systemctl enable httpd
+                echo "<h1>Startseite - Pascal Werren" | sudo tee  /home/573855.cloudwaysapps.com/hfjzxghgzg/public_html/html/index.html
+  EOF
 
   tags = {
     Name                 = data.external.resouce_name.result.name
     "Linux Distribution" = "Ubuntu"
   }
 
-  connection {
-    type        = "ssh"
-    host        = self.public_ip
-    user        = "ubuntu"
-    private_key = file("${path.module}/aws_key/aws_key")
-    timeout     = "4m"
+}
+resource "aws_security_group" "web-ssh-http" {
+  name = "morning-ssh-http"
+  description = "allow ssh and http traffic"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "export PATH=$PATH:/usr/bin",
-      "apt update",
-      "apt -y install apache2"
-    ]
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0/"]
   }
-}
-
-
-resource "aws_key_pair" "deployer" {
-  key_name   = "aws_key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDak9DLleCQOyn1RtehV5M2B2SrTi1Yfus+MJ1mmuy8rDHWjavfpgZYpwP58iELPqIinhK7HGsgcWhyTJ38wJzZlyMT6CkFL3zo1HSyRGJp8VrE63IAK/lU+JSFHASxEI1WtBAXEKo58xUoO5IvyD44kBGucHVZueKU7e3HzdYHCqf8Jk9eWkkaRoqD3mMZj4j3seyIrO7foEYjqUp1L4YIBUVWWGXX/j1e9fhVgNsfchIDWLsiGHDzuIvQtaz6EdVVqpe6aijOG12hWU6j3WzeFrHdakjVa/Pg2AZG337bFV8GgxVGCbsTPhmK1G6QTO7IFxqO7V4T1hG/p3Owd0k5 post\\werrenp@w00vlq"
-}
-
-resource "aws_security_group" "main" {
-  egress = [
-    {
-      cidr_blocks      = [ "0.0.0.0/0", ]
-      description      = ""
-      from_port        = 0
-      ipv6_cidr_blocks = []
-      prefix_list_ids  = []
-      protocol         = "-1"
-      security_groups  = []
-      self             = false
-      to_port          = 0
-    }
-  ]
-  ingress                = [
-    {
-      cidr_blocks      = [ "0.0.0.0/0", ]
-      description      = ""
-      from_port        = 22
-      ipv6_cidr_blocks = []
-      prefix_list_ids  = []
-      protocol         = "tcp"
-      security_groups  = []
-      self             = false
-      to_port          = 22
-    }
-  ]
 }
