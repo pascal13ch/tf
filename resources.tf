@@ -4,10 +4,11 @@ resource "aws_instance" "web" {
   security_groups   = ["${aws_security_group.web-ssh-http.name}"]
   user_data = <<-EOF
                 #! /bin/bash
-                sudo yum install httpd -y
+                sudo apt install apache2 -y
+                sudo ufw allow 'Apache'
                 sudo systemctl start httpd
                 sudo systemctl enable httpd
-                echo "<h1>Startseite - Pascal Werren" | sudo tee  /home/573855.cloudwaysapps.com/hfjzxghgzg/public_html/html/index.html
+                sudo echo "<h1>Startseite - Pascal Werren" | sudo tee var/www/html/index.html
   EOF
 
   tags = {
@@ -45,4 +46,18 @@ resource "aws_security_group" "web-ssh-http" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+resource "aws_ebs_volume" "web-storage" {
+  availability_zone = var.region
+  size              = 1
+  tags              = {
+    Name = "webstorage"
+  }
+}
+
+resource "aws_volume_attachment" "web-storage-attach"{
+  device_name   = "/dev/sdd"
+  volume_id     = "${aws_ebs_volume.web-storage.id}"
+  instance_id   = "${aws_instance.web.id}"
 }
