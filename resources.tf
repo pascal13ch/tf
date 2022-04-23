@@ -18,7 +18,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "web" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
-  security_groups   = ["${aws_security_group.web_security_group.name}"]
+  security_groups   = ["${aws_security_group.web-ssh-http.name}"]
   user_data = <<-EOF
                 #! /bin/bash
                 sudo yum install httpd -y
@@ -60,6 +60,6 @@ resource "aws_security_group" "web-ssh-http" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0/"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
